@@ -1,6 +1,8 @@
 import { Button, Center, Heading, Stack } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
+import { toast, ToastContainer } from "react-toastify";
 import Card from "../../components/Card/Card";
 import Input from "../../components/Inputs/TextFieldInput";
 
@@ -15,28 +17,47 @@ interface FormState extends FieldValues {
 }
 
 function SignIn() {
+  const navigate = useNavigate();
+
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
   } = useForm<FormState>();
 
-  useEffect(() => {
-    console.log("Effect");
-  }, []);
-
   const onSubmit = (values: FormState) => {
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 3000);
+    // the delay is to fake an API call
+    if (
+      values.email === dummyUser.email &&
+      values.password === dummyUser.password
+    ) {
+      toast.success("Logged in successfully", {
+        autoClose: 3000,
+        position: "bottom-right",
+      });
+
+      return setTimeout(() => navigate("/welcome"), 3000);
+    }
+
+    // don't tell the user which one is wrong, as it makes it easier for hackers
+    return toast.error("Email or password is incorrect", {
+      autoClose: 3000,
+      position: "bottom-right",
     });
   };
 
   return (
-    <Center position="relative" height="100vh" p="6" overflow="hidden">
+    <Center
+      position="relative"
+      height="100vh"
+      p="6"
+      overflow="hidden"
+      bg="gray.50"
+    >
       <Card p="8" mx="auto" width={["full", "md"]}>
-        <Heading textAlign="center">Welcome back</Heading>
+        <Heading mb="5" textAlign="center">
+          Welcome back
+        </Heading>
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing="4">
@@ -49,17 +70,22 @@ function SignIn() {
               error={errors.email}
             />
 
-            <Button
-              mt={4}
-              colorScheme="teal"
-              isLoading={isSubmitting}
-              type="submit"
-            >
+            <Input<FormState>
+              name="password"
+              label="Password"
+              type="password"
+              required
+              register={register}
+              error={errors.password}
+            />
+
+            <Button colorScheme="teal" isLoading={isSubmitting} type="submit">
               Submit
             </Button>
           </Stack>
         </form>
       </Card>
+      <ToastContainer />
     </Center>
   );
 }
