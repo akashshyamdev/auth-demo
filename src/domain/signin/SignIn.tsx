@@ -56,7 +56,7 @@ function SignIn() {
     >
       <Card p="8" mx="auto" width={["full", "md"]}>
         <Heading mb="5" textAlign="center">
-          Welcome back
+          Login
         </Heading>
 
         <form onSubmit={handleSubmit(onSubmit)}>
